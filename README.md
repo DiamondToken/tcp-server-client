@@ -3,6 +3,6 @@
 ## Quick Start
 ```console
 $ make
-$ ./server <output_file>
-$ ./client <address> <file>
+$ ./server
+$ ./client <address>
 ```

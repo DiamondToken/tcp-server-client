@@ -14,49 +14,43 @@
 
 
 int main(int argc,char ** argv){
-    int sockfd, num;
+    int sockfd;
     char buff[MAXLINE];
-    const char *file_to_send = argv[2];
 
     struct hostent *he;
     struct sockaddr_in server;
 
-    if(argc != 3){
-        printf("Usage: ./<IP Address> <File to send>\n");
+    if(argc != 2){
+        printf("Usage: ./client <Address>\n");
         exit(1);
     }
 
     he = gethostbyname(argv[1]);
     if(he == NULL){
-        printf("gethostbyname error\n");
+        fprintf(stderr, "Gethostbyname error: %s\n", hstrerror(h_errno));
         exit(1);
     }
 
     sockfd = socket(AF_INET,SOCK_STREAM,0);
     if(sockfd == -1){
-        printf("socket error\n");
+        fprintf(stderr, "Socket error %s\n", strerror(errno));
         exit(1);
     }
 
-    bzero(&server,sizeof(server));
+    bzero(&server, sizeof(server));
     server.sin_family = AF_INET;
     server.sin_port = htons(PORT);
     server.sin_addr = *((struct in_addr*)he->h_addr);
 
-    if(connect(sockfd, (struct sockaddr *)&server, sizeof(server))== -1){
-        printf("connect error\n");
+    if(connect(sockfd, (struct sockaddr *)&server, sizeof(server)) == -1){
+        fprintf(stderr, "Connection error %s\n", strerror(errno));
         exit(1);
-
     }
 
-    FILE *fp;
-    fp = fopen(file_to_send, "r");
-
-    printf("Sending file <%s> to server at <%s>: \n", file_to_send, argv[1]);
-    fgets(buff, MAXLINE, fp);
+    fgets(buff, MAXLINE, stdin);
 
     if (write(sockfd, buff, strlen(buff)) == -1){
-        printf("send msg error: %s \n",strerror(errno));
+        fprintf(stderr, "Send message error: %s\n", strerror(errno));
         exit(1);
     }
 
