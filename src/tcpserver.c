@@ -81,7 +81,7 @@ int main(int argc, char ** argv){
             printf("Fork error: %s\n", strerror(errno));
 
         close(connectfd);
-	}
+    }
 
     return 0;
 }

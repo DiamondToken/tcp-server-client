@@ -17,7 +17,6 @@ int main(int argc,char ** argv){
     int sockfd;
     char buff[MAXLINE];
 
-    struct hostent *he;
     struct sockaddr_in server;
 
     if(argc != 2){
@@ -25,13 +24,7 @@ int main(int argc,char ** argv){
         exit(1);
     }
 
-    he = gethostbyname(argv[1]);
-    if(he == NULL){
-        fprintf(stderr, "Gethostbyname error: %s\n", hstrerror(h_errno));
-        exit(1);
-    }
-
-    sockfd = socket(AF_INET,SOCK_STREAM,0);
+    sockfd = socket(AF_INET, SOCK_STREAM, 0);
     if(sockfd == -1){
         fprintf(stderr, "Socket error %s\n", strerror(errno));
         exit(1);
@@ -40,13 +33,14 @@ int main(int argc,char ** argv){
     bzero(&server, sizeof(server));
     server.sin_family = AF_INET;
     server.sin_port = htons(PORT);
-    server.sin_addr = *((struct in_addr*)he->h_addr);
+    server.sin_addr.s_addr = htonl(INADDR_ANY);
 
     if(connect(sockfd, (struct sockaddr *)&server, sizeof(server)) == -1){
         fprintf(stderr, "Connection error %s\n", strerror(errno));
         exit(1);
     }
 
+    printf("Input something: \n");
     fgets(buff, MAXLINE, stdin);
 
     if (write(sockfd, buff, strlen(buff)) == -1){
